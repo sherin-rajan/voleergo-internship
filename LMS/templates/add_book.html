@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title %}Add Book | BookHaven{% endblock %}
+
+{% block content %}
+
+<div class="form-container">
+    <div class="form-header">
+        <span class="section-tag">BOOK MANAGEMENT</span>
+        <h1>Add New Book</h1>
+        <p>Add a new book to your collection.</p>
+    </div>
+
+    <form method="post" class="book-form">
+        {% csrf_token %}
+
+        {{ form.as_p }}
+
+        <button type="submit" class="btn btn-primary form-button">
+            Add Book
+        </button>
+    </form>
+</div>
+
+{% endblock %}

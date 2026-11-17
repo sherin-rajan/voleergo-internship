@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %}Home | BookHaven{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div class="hero-content">
+        <span class="hero-tag">WELCOME TO BOOKHAVEN</span>
+
+        <h1>Discover Your Next <span>Favourite Book.</span></h1>
+
+        <p>
+            Every book opens a new world.
+            Explore our collection and find your next great read.
+        </p>
+
+        <div class="hero-buttons">
+            <a href="{% url 'book_list' %}" class="btn btn-primary">Explore Books</a>
+            <a href="{% url 'add_book' %}" class="btn btn-outline">Add a Book</a>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block title %}Update Book | BookHaven{% endblock %}
+
+{% block content %}
+
+<div class="form-container">
+    <div class="form-header">
+        <span class="section-tag">BOOK MANAGEMENT</span>
+        <h1>Update Book Details</h1>
+        <p>Make changes to your existing book.</p>
+    </div>
+
+    <form method="post" class="book-form">
+        {% csrf_token %}
+
+        {{ form.as_p }}
+
+        <button type="submit" class="btn btn-primary form-button">
+            Update Book
+        </button>
+
+        <a href="{% url 'book_list' %}" class="cancel-link">Cancel</a>
+    </form>
+</div>
+
+{% endblock %}

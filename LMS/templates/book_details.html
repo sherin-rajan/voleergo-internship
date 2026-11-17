@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ book.title }} | BookHaven{% endblock %}
+
+{% block content %}
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert">{{ message }}</div>
+    {% endfor %}
+{% endif %}
+
+<div class="details-container">
+    <div class="details-cover">📚</div>
+
+    <div class="details-content">
+        <span class="section-tag">BOOK DETAILS</span>
+
+        <h1>{{ book.title }}</h1>
+
+        <p class="details-author">Written by {{ book.author }}</p>
+
+        <div class="details-divider"></div>
+
+        <div class="detail-item">
+            <span>ISBN</span>
+            <strong>{{ book.isbn }}</strong>
+        </div>
+
+        <div class="detail-item">
+            <span>Price</span>
+            <strong class="details-price">₹{{ book.price }}</strong>
+        </div>
+
+        <div class="detail-item">
+            <span>Published Date</span>
+            <strong>{{ book.published_date }}</strong>
+        </div>
+
+        <div class="description">
+            <h3>Description</h3>
+            <p>{{ book.description|default:"No description available." }}</p>
+        </div>
+
+        <div class="details-actions">
+            <a href="{% url 'update_book' book.id %}" class="btn btn-primary">Update Book</a>
+            <a href="{% url 'book_list' %}" class="btn btn-outline">Back to Books</a>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
