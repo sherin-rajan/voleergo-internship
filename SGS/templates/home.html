@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block title %}Home | Student Grade Calculator{% endblock %}
+
+{% block content %}
+
+<h1>Student Grade Calculator</h1>
+
+<p>Manage students, subjects and academic results.</p>
+
+<a href="{% url 'add_student' %}">Add Student</a>
+
+<a href="{% url 'add_subject' %}">Add Subject</a>
+
+{% endblock %}
