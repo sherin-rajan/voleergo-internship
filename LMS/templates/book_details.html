@@ -44,6 +44,9 @@
 
         <div class="details-actions">
             <a href="{% url 'update_book' book.id %}" class="btn btn-primary">Update Book</a>
+            <a href="{% url 'delete_book' book.id %}"class="btn btn-delete"
+                onclick="return confirm('Are you sure you want to delete this book?');">
+                Delete Book</a>
             <a href="{% url 'book_list' %}" class="btn btn-outline">Back to Books</a>
         </div>
     </div>

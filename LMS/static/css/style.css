@@ -91,6 +91,21 @@ a {
     transform: translateY(-2px);
 }
 
+.btn-delete {
+    
+    background: #dc3545;
+    color: #ffffff;
+    border: 2px solid #dc3545;
+    transition: 0.3s ease;
+}
+
+.btn-delete:hover {
+    background: #b02a37;
+    border-color: #b02a37;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(220, 53, 69, 0.2);
+}
+
 .btn-outline {
     border-color: #172337;
     color: #172337;
@@ -521,3 +536,4 @@ a {
         font-size: 27px;
     }
 }
+
