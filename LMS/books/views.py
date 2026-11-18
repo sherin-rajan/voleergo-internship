@@ -41,11 +41,8 @@ def update_book(request, pk):
 
 def delete_book(request, pk):
     book = get_object_or_404(Book, id=pk)
-
-    if request.method == 'POST':
-        book.delete()
-        messages.success(request, 'Book deleted successfully!')
-
+    book.delete()
+    messages.success(request, 'Book deleted successfully!')
     return redirect('book_list')
 
 
