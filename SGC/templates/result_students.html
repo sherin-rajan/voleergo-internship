@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="page-header">
+    <h1>
+        {% if result_type == 'completed' %}
+            Completed Results
+        {% elif result_type == 'pending' %}
+            Pending Results
+        {% elif result_type == 'passed' %}
+            Passed Students
+        {% elif result_type == 'failed' %}
+            Failed Students
+        {% endif %}
+    </h1>
+
+    <p>View student result details.</p>
+</div>
+
+<div class="table-card">
+
+    {% if students %}
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Student Name</th>
+                    <th>Roll Number</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for student in students %}
+                    <tr>
+                        <td>{{ student.name }}</td>
+                        <td>{{ student.roll_number }}</td>
+                        <td>
+                            <a href="{% url 'student_detail' student.id %}"
+                               class="view-link">
+                                View Details
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+    {% else %}
+
+        <p class="no-top-student">
+            No students found in this category.
+        </p>
+
+    {% endif %}
+
+</div>
+
+<div class="detail-actions">
+    <a href="{% url 'dashboard' %}" class="back-link">
+        Back to Dashboard
+    </a>
+</div>
+
+{% endblock %}

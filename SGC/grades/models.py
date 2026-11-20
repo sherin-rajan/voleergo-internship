@@ -20,19 +20,31 @@ class Subject(models.Model):
         return self.name
 
 
+
 class StudentMark(models.Model):
+
+    EXAM_STATUS_CHOICES = [
+        ('present', 'Present'),
+        ('absent', 'Absent'),
+    ]
+
     student = models.ForeignKey(
         Student,
         on_delete=models.CASCADE,
         related_name='marks'
     )
+    subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
 
-    subject = models.ForeignKey(
-        Subject,
-        on_delete=models.CASCADE
+    exam_status = models.CharField(
+        max_length=10,
+        choices=EXAM_STATUS_CHOICES,
+        default='present'
     )
 
-    marks_obtained = models.PositiveIntegerField()
+    marks_obtained = models.PositiveIntegerField(
+        null=True,
+        blank=True
+    )
 
     class Meta:
         unique_together = ('student', 'subject')

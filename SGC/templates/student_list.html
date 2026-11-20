@@ -1,61 +1,113 @@
 
 {% extends 'base.html' %}
 
-{% block title %}Student List{% endblock %}
-
 {% block content %}
 
 <div class="page-header">
-    <div>
-        <h2>Student Records</h2>
-        <p>View all registered students.</p>
-    </div>
-
-    <a href="{% url 'add_student' %}" class="btn btn-primary">
-        + Add Student
-    </a>
+    <h1>Student List</h1>
+    <p>Manage student records and view academic results.</p>
 </div>
 
 <div class="table-card">
 
-    <table>
-        <thead>
-            <tr>
-                <th>Sl.No</th>
-                <th>Student Name</th>
-                <th>Roll Number</th>
-                <th>Action</th>
-            </tr>
-        </thead>
+    <!-- Search and Filter -->
+    <form method="GET" class="student-filter-form">
 
-        <tbody>
-            {% for student in students %}
-            <tr>
-                <td>{{ forloop.counter }}</td>
+        <input
+            type="text"
+            name="search"
+            id="studentSearch"
+            placeholder="Search by name or roll number"
+            value="{{ search }}"
+        >
 
-                <td class="student-name">
-                    {{ student.name }}
-                </td>
+        <select name="result">
+            <option value="">All Results</option>
 
-                <td>{{ student.roll_number }}</td>
+            <option value="pass"
+                {% if result_filter == 'pass' %}selected{% endif %}>
+                Pass
+            </option>
 
-                <td>
-                    <a href="{% url 'student_detail' student.id %}"
-                       class="view-link">
-                        View Results →
-                    </a>
-                </td>
-            </tr>
+            <option value="fail"
+                {% if result_filter == 'fail' %}selected{% endif %}>
+                Fail
+            </option>
 
-            {% empty %}
-            <tr>
-                <td colspan="4" class="empty-message">
-                    No students registered yet.
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+            <option value="incomplete"
+                {% if result_filter == 'incomplete' %}selected{% endif %}>
+                Pending
+            </option>
+        </select>
+
+        <button type="submit">Apply Filter</button>
+
+        <a href="{% url 'student_list' %}">Clear</a>
+
+    </form>
+
+    {% if students %}
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Student Name</th>
+                    <th>Roll Number</th>
+                    <th>Result</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for item in students %}
+                    <tr>
+                        <td>{{ item.student.name }}</td>
+
+                        <td>{{ item.student.roll_number }}</td>
+
+                        <td>
+                            <span class="result-badge
+                                {% if item.result == 'Pass' %}
+                                    pass
+                                {% elif item.result == 'Fail' %}
+                                    fail
+                                {% else %}
+                                    pending
+                                {% endif %}">
+                                {{ item.result }}
+                            </span>
+                        </td>
+
+                        <td class="student-actions">
+
+                            <a href="{% url 'student_detail' item.student.id %}"
+                               class="view-link">
+                                View
+                            </a>
+
+                            <a href="{% url 'edit_student' item.student.id %}"
+                               class="edit-link">
+                                Edit
+                            </a>
+
+                            <a href="{% url 'delete_student' item.student.id %}"
+                               class="delete-link">
+                                Delete
+                            </a>
+
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+    {% else %}
+
+        <p class="no-top-student">
+            No students found.
+        </p>
+
+    {% endif %}
 
 </div>
 

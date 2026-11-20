@@ -26,13 +26,33 @@ def calculate_student_result(student):
 
         if mark is None:
             subject_results.append({
+                'subject_id': subject.id,
                 'subject': subject.name,
                 'marks_obtained': None,
                 'max_marks': subject.max_marks,
                 'grade': '-',
-                'result': 'Pending'
+                'result': 'Pending',
+                'mark_id': None
             })
             continue
+
+
+        
+        if mark.exam_status == 'absent':
+            completed_subjects += 1
+            failed_subjects = True
+
+            subject_results.append({
+                'subject_id': subject.id,
+                'subject': subject.name,
+                'marks_obtained': None,
+                'max_marks': subject.max_marks,
+                'grade': 'F',
+                'result': 'Fail',
+                'mark_id': mark.id,
+            })
+            continue
+
 
         completed_subjects += 1
 
@@ -65,11 +85,13 @@ def calculate_student_result(student):
             result = 'Pass'
 
         subject_results.append({
+            'subject_id': subject.id,
             'subject': subject.name,
             'marks_obtained': obtained,
             'max_marks': subject.max_marks,
             'grade': grade,
-            'result': result
+            'result': result,
+            'mark_id': mark.id
         })
 
     # Calculate overall percentage

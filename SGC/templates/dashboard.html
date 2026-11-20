@@ -1,0 +1,171 @@
+
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="dashboard-container">
+
+    <div class="dashboard-header">
+        <div>
+            <h1>Website Dashboard</h1>
+            <p>Overview of student grades and academic performance.</p>
+        </div>
+    </div>
+
+
+<!-- Top Performing Student -->
+
+<div class="top-student-section">
+
+    <div class="top-student-card">
+
+        <div class="top-student-icon">🏆</div>
+
+        <h3>Top Performing Student</h3>
+
+        {% if top_student %}
+
+            <h2>{{ top_student.name }}</h2>
+
+            <p class="top-student-roll">
+                Roll Number: {{ top_student.roll_number }}
+            </p>
+
+            <div class="top-student-percentage">
+                {{ top_student.percentage }}%
+            </div>
+
+            <p class="top-student-caption">
+                Highest Overall Percentage
+            </p>
+
+        {% else %}
+
+            <p class="no-top-student">
+                No completed results yet.
+            </p>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+    <!-- Statistics Cards -->
+    <div class="dashboard-cards">
+
+        <a href="{% url 'student_list' %}" class="dashboard-card">
+            <h3>Total Students</h3>
+            <h2>{{ total_students }}</h2>
+        </a>
+
+        <a href="{% url 'subject_list' %}" class="dashboard-card">
+            <h3>Total Subjects</h3>
+            <h2>{{ total_subjects }}</h2>
+        </a>
+
+        <a href="{% url 'result_students' 'completed' %}" class="dashboard-card">
+            <h3>Completed Results</h3>
+            <h2>{{ completed_results }}</h2>
+        </a>
+
+        <a href="{% url 'result_students' 'pending' %}" class="dashboard-card">
+            <h3>Pending Results</h3>
+            <h2>{{ pending_results }}</h2>
+        </a>
+
+    </div>
+
+    <!-- Pass and Fail Overview -->
+    <div class="performance-summary">
+
+        <a href="{% url 'result_students' 'passed' %}">
+            <h3>Passed Students</h3>
+            <h2>{{ passed_students }}</h2>
+        </a>
+
+        <a href="{% url 'result_students' 'failed' %}">
+            <h3>Failed Students</h3>
+            <h2>{{ failed_students }}</h2>
+        </a>
+
+    </div>
+    
+
+    <!-- Subject Performance Graph -->
+    <div class="chart-container">
+
+        <h2>Overall Subject Performance</h2>
+        <p>Average marks percentage for each subject.</p>
+
+        <canvas id="performanceChart"></canvas>
+
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+
+        <h2>Quick Actions</h2>
+
+        <a href="{% url 'add_student' %}">Add Student</a>
+
+        <a href="{% url 'student_list' %}">Manage Students</a>
+
+        <a href="{% url 'add_subject' %}">Add Subject</a>
+
+        <a href="{% url 'subject_list' %}">Manage Subjects</a>
+
+    </div>
+
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    const subjectLabels = [
+        {% for item in subject_performance %}
+            "{{ item.subject|escapejs }}",
+        {% endfor %}
+    ];
+
+    const subjectAverages = [
+        {% for item in subject_performance %}
+            {{ item.average }},
+        {% endfor %}
+    ];
+
+    const ctx = document.getElementById('performanceChart');
+
+    new Chart(ctx, {
+        type: 'bar',
+
+        data: {
+            labels: subjectLabels,
+
+            datasets: [{
+                label: 'Average Performance (%)',
+                data: subjectAverages,
+                borderWidth: 1,
+                borderRadius: 6
+            }]
+        },
+
+        options: {
+            responsive: true,
+
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100,
+                    title: {
+                        display: true,
+                        text: 'Percentage (%)'
+                    }
+                }
+            }
+        }
+    });
+</script>
+
+{% endblock %}

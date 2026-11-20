@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Subject{% endblock %}
+
+{% block content %}
+
+<div class="form-card">
+
+    <div class="form-heading">
+        <h2>Edit Subject</h2>
+        <p>Update {{ subject.name }} details.</p>
+    </div>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        {{ form.as_p }}
+
+        <button type="submit" class="btn btn-primary">
+            Update Subject
+        </button>
+
+        <a href="{% url 'subject_list' %}"
+           class="btn btn-secondary">
+            Cancel
+        </a>
+    </form>
+
+</div>
+
+{% endblock %}

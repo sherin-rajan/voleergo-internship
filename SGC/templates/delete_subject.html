@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block title %}Delete Subject{% endblock %}
+
+{% block content %}
+
+<div class="form-card">
+
+    <div class="form-heading">
+        <h2>Delete Subject</h2>
+        <p>Please confirm before proceeding.</p>
+    </div>
+
+    <p>
+        Are you sure you want to delete
+        <strong>{{ subject.name }}</strong>?
+    </p>
+
+    <p>
+        Maximum Marks: {{ subject.max_marks }}
+    </p>
+
+    <p class="warning-text">
+        Warning: All student marks recorded for this subject
+        will also be permanently deleted.
+    </p>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <button type="submit" class="btn btn-danger">
+            Yes, Delete Subject
+        </button>
+
+        <a href="{% url 'subject_list' %}"
+           class="btn btn-secondary">
+            Cancel
+        </a>
+    </form>
+
+</div>
+
+{% endblock %}

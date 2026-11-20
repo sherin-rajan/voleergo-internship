@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block title %}Delete Student{% endblock %}
+
+{% block content %}
+
+<div class="form-card delete-card">
+
+    <div class="form-heading">
+        <h2>Delete Student</h2>
+        <p>Please confirm before proceeding.</p>
+    </div>
+
+    <div class="delete-message">
+        <p>
+            Are you sure you want to delete
+            <strong>{{ student.name }}</strong>?
+        </p>
+
+        <p>
+            Roll Number: {{ student.roll_number }}
+        </p>
+
+        <p class="warning-text">
+            Warning: All marks associated with this student
+            will also be permanently deleted.
+        </p>
+    </div>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <button type="submit" class="btn-delete">
+            Yes, Delete Student
+        </button>
+
+        <a href="{% url 'student_detail' student.id %}"
+           class="btn btn-secondary">
+            Cancel
+        </a>
+    </form>
+
+</div>
+
+{% endblock %}

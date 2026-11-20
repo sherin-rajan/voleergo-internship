@@ -31,6 +31,7 @@
                 <th>Maximum Marks</th>
                 <th>Grade</th>
                 <th>Result</th>
+                <th>Actions</th>
             </tr>
         </thead>
 
@@ -54,6 +55,28 @@
                     <span class="result-badge {% if item.result == 'Fail' %}fail{% endif %}">
                         {{ item.result }}
                     </span>
+                </td>
+                <td>
+                    {% if item.mark_id %}
+
+                        <a href="{% url 'edit_mark' student.id item.mark_id %}"
+                        class="edit-link">
+                            Edit
+                        </a>
+
+                        <a href="{% url 'delete_mark' student.id item.mark_id %}"
+                        class="delete-link">
+                            Delete
+                        </a>
+
+                    {% else %}
+
+                        <a href="{% url 'add_mark_subject' student.id item.subject_id %}"
+                        class="view-link">
+                            + Add Marks
+                        </a>
+
+                    {% endif %}
                 </td>
             </tr>
             {% endfor %}
@@ -93,6 +116,16 @@
     <a href="{% url 'add_mark' student.id %}"
        class="btn-add-mark">
         + Add Student Marks
+    </a>
+
+    <a href="{% url 'edit_student' student.id %}"
+       class="btn btn-primary">
+        Edit Student
+    </a>
+
+    <a href="{% url 'delete_student' student.id %}"
+       class="btn-delete">
+        Delete Student
     </a>
 
     <a href="{% url 'student_list' %}"
