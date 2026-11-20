@@ -4,8 +4,14 @@
 {% block content %}
 
 <div class="page-header">
-    <h1>Student List</h1>
-    <p>Manage student records and view academic results.</p>
+    <div>
+        <h1>Student List</h1>
+        <p>Manage student records and view academic results.</p>
+    </div>
+
+    <a href="{% url 'add_student' %}" class="primary-btn">
+        + Add Student
+    </a>
 </div>
 
 <div class="table-card">
@@ -21,7 +27,7 @@
             value="{{ search }}"
         >
 
-        <select name="result">
+        <select name="result" onchange="this.form.submit()">
             <option value="">All Results</option>
 
             <option value="pass"
@@ -40,9 +46,6 @@
             </option>
         </select>
 
-        <button type="submit">Apply Filter</button>
-
-        <a href="{% url 'student_list' %}">Clear</a>
 
     </form>
 
@@ -100,6 +103,34 @@
                 {% endfor %}
             </tbody>
         </table>
+        <!-- Pagination -->
+        <div class="pagination">
+
+            {% if page_obj.has_previous %}
+                <a href="?search={{ search }}&result={{ result_filter }}&page={{ page_obj.previous_page_number }}">
+                    Previous
+                </a>
+            {% endif %}
+
+            {% for num in page_obj.paginator.page_range %}
+
+                {% if page_obj.number == num %}
+                    <span class="current-page">{{ num }}</span>
+                {% else %}
+                    <a href="?search={{ search }}&result={{ result_filter }}&page={{ num }}">
+                        {{ num }}
+                    </a>
+                {% endif %}
+
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+                <a href="?search={{ search }}&result={{ result_filter }}&page={{ page_obj.next_page_number }}">
+                    Next
+                </a>
+            {% endif %}
+
+        </div>
 
     {% else %}
 
@@ -110,5 +141,19 @@
     {% endif %}
 
 </div>
+<script>
+    const searchInput = document.getElementById('studentSearch');
+    const searchForm = document.querySelector('.student-filter-form');
+
+    let searchTimeout;
+
+    searchInput.addEventListener('input', function () {
+        clearTimeout(searchTimeout);
+
+        searchTimeout = setTimeout(function () {
+            searchForm.submit();
+        }, 500);
+    });
+</script>
 
 {% endblock %}

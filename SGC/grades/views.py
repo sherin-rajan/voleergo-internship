@@ -4,6 +4,7 @@ from .models import Student, Subject, StudentMark
 from .utils import calculate_student_result
 from django.db.models import Q
 from django.db.models import Avg
+from django.core.paginator import Paginator
 
 # Create your views here.
 
@@ -135,8 +136,14 @@ def student_list(request):
             if item['result'].lower() == result_filter
         ]
 
+    # Pagination
+    paginator = Paginator(student_list, 5)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
     return render(request, 'student_list.html', {
-        'students': student_list,
+        'students': page_obj.object_list,
+        'page_obj': page_obj,
         'search': query,
         'result_filter': result_filter
     })

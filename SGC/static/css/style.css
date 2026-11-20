@@ -37,11 +37,23 @@
     box-sizing: border-box;
 }
 
+html, body {
+    min-height: 100%;
+    margin: 0;
+}
+
 body {
     font-family: Arial, Helvetica, sans-serif;
     background: var(--background);
     color: var(--text);
     line-height: 1.6;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+main.container {
+    flex: 1;
+    width: 100%;
 }
 
 a {
@@ -869,6 +881,38 @@ tbody tr:hover {
     font-size: 13px;
     font-weight: 600;
 }
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin-top: 25px;
+    flex-wrap: wrap;
+}
+
+.pagination a,
+.pagination .current-page {
+    padding: 8px 13px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.pagination a {
+    color: #2f684b;
+    border: 1px solid #ddd;
+    transition: 0.2s;
+}
+
+.pagination a:hover {
+    background: #e8f1eb;
+}
+
+.pagination .current-page {
+    background: #2f684b;
+    color: white;
+    font-weight: 600;
+}
 
 /* ========================================
    12. FOOTER
@@ -879,7 +923,7 @@ tbody tr:hover {
     color: #dce4ed;
     text-align: center;
     padding: 20px;
-    margin-top: 60px;
+    margin-top: auto;
     font-size: 13px;
 }
 
