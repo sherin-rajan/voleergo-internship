@@ -2,8 +2,7 @@ from django.shortcuts import render,redirect,get_object_or_404
 from .forms import StudentForm,SubjectForm,StudentMarkForm
 from .models import Student, Subject, StudentMark
 from .utils import calculate_student_result
-from django.db.models import Q
-from django.db.models import Avg
+from django.db.models import Q, Avg
 from django.core.paginator import Paginator
 
 # Create your views here.
@@ -16,7 +15,7 @@ def add_student(request):
         form = StudentForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('home')
+            return redirect('student_list')
 
     else:
         form = StudentForm()

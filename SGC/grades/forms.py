@@ -16,8 +16,6 @@ class SubjectForm(forms.ModelForm):
         fields = ['name', 'max_marks', 'pass_marks']
 
 
-
-
 class StudentMarkForm(forms.ModelForm):
 
     marks_obtained = forms.IntegerField(
