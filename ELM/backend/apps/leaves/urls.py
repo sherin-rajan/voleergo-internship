@@ -1,0 +1,62 @@
+from django.urls import path
+from apps.leaves.views import (
+    LeaveRequestCreateView,
+    ManagerLeaveRequestListView,
+    ManagerLeaveReviewView,
+    MyLeaveRequestListView,
+    MyLeaveBalanceListView,
+    ManagerDashboardView,
+    HRDashboardView,
+    HRMonthlyLeaveReportView,
+    HRDepartmentLeaveReportView,
+    LeaveCalendarView,)
+
+
+urlpatterns = [
+    path(
+        'requests/',
+        LeaveRequestCreateView.as_view(),
+        name='leave-request-create'
+    ),
+    path(
+        'manager/requests/',
+        ManagerLeaveRequestListView.as_view(),
+        name='manager-leave-requests'
+    ),
+    path(
+        'manager/requests/<int:pk>/review/',
+        ManagerLeaveReviewView.as_view(),
+        name='manager-leave-review'
+    ),
+    path(
+        'my-requests/', 
+         MyLeaveRequestListView.as_view(), 
+         name='my-leave-requests'),
+    path(
+        'my-balances/', 
+         MyLeaveBalanceListView.as_view(), 
+         name='my-leave-balances'),
+    path(
+        'manager/dashboard/',
+        ManagerDashboardView.as_view(),
+        name='manager-dashboard'
+    ),
+    path(
+        'hr/dashboard/',
+        HRDashboardView.as_view(),
+        name='hr-dashboard'
+    ),
+    path(
+        'hr/reports/monthly/',
+        HRMonthlyLeaveReportView.as_view(),
+        name='hr-monthly-leave-report'
+    ),
+    path(
+        'hr/reports/departments/',
+        HRDepartmentLeaveReportView.as_view(),
+        name='hr-department-leave-report'
+    ),
+    path('calendar/', 
+         LeaveCalendarView.as_view(), 
+         name='leave-calendar'),
+    ]
