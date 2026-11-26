@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from apps.leaves.models import LeaveRequest, LeaveBalance
+from apps.leaves.models import LeaveRequest, LeaveBalance, LeaveType
 from apps.leaves.services import calculate_working_days
 from django.utils import timezone
 
@@ -25,33 +25,28 @@ class LeaveRequestSerializer(serializers.ModelSerializer):
     def get_total_days(self, obj):
         return calculate_working_days(obj.start_date, obj.end_date)
 
-    
     def validate(self, data):
+        request_user = self.context['request'].user
+
         start_date = data['start_date']
         end_date = data['end_date']
         leave_type = data['leave_type']
 
-        employee = getattr(request_user, 'employee', None)
-
-        if employee and start_date < employee.joining_date:
-            raise serializers.ValidationError(
-                "Leave cannot be applied for dates before the joining date."
-            )
-
-        request_user = self.context['request'].user
-
-        # Only employees and managers can apply for leave.
         if request_user.role not in ['employee', 'manager']:
             raise serializers.ValidationError(
                 "You are not allowed to apply for leave."
             )
 
-        # Check employee profile exists.
         employee = getattr(request_user, 'employee', None)
 
         if employee is None:
             raise serializers.ValidationError(
                 "Employee profile not found."
+            )
+
+        if start_date < employee.joining_date:
+            raise serializers.ValidationError(
+                "Leave cannot be applied for dates before the joining date."
             )
 
         if end_date < start_date:
@@ -112,4 +107,9 @@ class LeaveReviewSerializer(serializers.Serializer):
         required=False,
         allow_blank=True
     )
+
+class LeaveTypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = LeaveType
+        fields = ['id', 'name', 'annual_days', 'description']
 

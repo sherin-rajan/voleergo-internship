@@ -9,7 +9,8 @@ from apps.leaves.views import (
     HRDashboardView,
     HRMonthlyLeaveReportView,
     HRDepartmentLeaveReportView,
-    LeaveCalendarView,)
+    LeaveCalendarView,
+    LeaveTypeListView,)
 
 
 urlpatterns = [
@@ -56,7 +57,12 @@ urlpatterns = [
         HRDepartmentLeaveReportView.as_view(),
         name='hr-department-leave-report'
     ),
-    path('calendar/', 
+    path(
+        'calendar/', 
          LeaveCalendarView.as_view(), 
          name='leave-calendar'),
+    path(
+        'types/', 
+        LeaveTypeListView.as_view(), 
+        name='leave-types'),
     ]

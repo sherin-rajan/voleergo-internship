@@ -1,6 +1,9 @@
 from rest_framework import generics, permissions
-from apps.leaves.models import LeaveRequest, LeaveBalance
-from apps.leaves.serializers import LeaveRequestSerializer,LeaveReviewSerializer
+from apps.leaves.models import LeaveRequest, LeaveBalance, LeaveType
+from apps.leaves.serializers import (
+    LeaveRequestSerializer,
+    LeaveReviewSerializer, 
+    LeaveTypeSerializer)
 from apps.leaves.services import calculate_working_days
 from apps.employees.models import Employee, Department
 
@@ -9,7 +12,7 @@ from datetime import timedelta
 from django.db.models import Q
 from django.utils import timezone
 from django.db import transaction
-from rest_framework import status
+from rest_framework import status, generics
 from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
@@ -353,3 +356,7 @@ class LeaveCalendarView(APIView):
 
         return Response(events)
 
+class LeaveTypeListView(generics.ListAPIView):
+    queryset = LeaveType.objects.all()
+    serializer_class = LeaveTypeSerializer
+    permission_classes = [IsAuthenticated]
