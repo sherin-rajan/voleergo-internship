@@ -113,3 +113,45 @@ class LeaveTypeSerializer(serializers.ModelSerializer):
         model = LeaveType
         fields = ['id', 'name', 'annual_days', 'description']
 
+class ManagerLeaveRequestSerializer(serializers.ModelSerializer):
+    employee_name = serializers.CharField(
+        source='employee.user.username',
+        read_only=True
+    )
+    employee_id = serializers.CharField(
+        source='employee.employee_id',
+        read_only=True
+    )
+    department = serializers.CharField(
+        source='employee.department.name',
+        read_only=True
+    )
+    leave_type_name = serializers.CharField(
+        source='leave_type.name',
+        read_only=True
+    )
+
+    total_days = serializers.SerializerMethodField()
+
+    class Meta:
+        model = LeaveRequest
+        fields = [
+            'id',
+            'employee_name',
+            'employee_id',
+            'department',
+            'leave_type_name',
+            'start_date',
+            'end_date',
+            'total_days',
+            'reason',
+            'status',
+            'created_at',
+        ]
+
+    def get_total_days(self, obj):
+        return calculate_working_days(
+            obj.start_date,
+            obj.end_date
+        )
+

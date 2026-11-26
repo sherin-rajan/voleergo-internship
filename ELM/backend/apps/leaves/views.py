@@ -3,7 +3,8 @@ from apps.leaves.models import LeaveRequest, LeaveBalance, LeaveType
 from apps.leaves.serializers import (
     LeaveRequestSerializer,
     LeaveReviewSerializer, 
-    LeaveTypeSerializer)
+    LeaveTypeSerializer,
+    ManagerLeaveRequestSerializer)
 from apps.leaves.services import calculate_working_days
 from apps.employees.models import Employee, Department
 
@@ -30,19 +31,23 @@ class LeaveRequestCreateView(generics.CreateAPIView):
         serializer.save(employee=employee)
 
 
-
 class ManagerLeaveRequestListView(ListAPIView):
-    serializer_class = LeaveRequestSerializer
+    serializer_class = ManagerLeaveRequestSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        if self.request.user.role not in ['manager', 'hr']:
+        if self.request.user.role != 'manager':
             raise PermissionDenied(
-                "Only managers and HR Administrators can view team requests."
+                "Only managers can view team requests."
             )
 
         return LeaveRequest.objects.filter(
-            employee__manager=self.request.user
+            employee__manager=self.request.user,
+            status='pending'
+        ).select_related(
+            'employee__user',
+            'employee__department',
+            'leave_type'
         ).order_by('-created_at')
 
 
