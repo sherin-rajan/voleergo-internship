@@ -1,217 +1,147 @@
 import { useEffect, useState } from "react";
 import api from "../services/api";
 
+const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const MAX_CHIPS = 2;
+
 function LeaveCalendar() {
   const [events, setEvents] = useState([]);
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [selectedDay, setSelectedDay] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        setLoading(true);
         const response = await api.get("leaves/calendar/");
         setEvents(response.data);
-        setError("");
       } catch (err) {
         setError("Unable to load leave calendar.");
       } finally {
         setLoading(false);
       }
     };
-
     fetchEvents();
   }, []);
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
-
   const firstDay = new Date(year, month, 1).getDay();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
 
   const days = [
     ...Array(firstDay).fill(null),
-    ...Array.from({ length: daysInMonth }, (_, i) => i + 1)
+    ...Array.from({ length: daysInMonth }, (_, i) => i + 1),
   ];
+
+  const toDateString = (day) =>
+    [year, String(month + 1).padStart(2, "0"), String(day).padStart(2, "0")].join("-");
 
   const getEventsForDay = (day) => {
     if (!day) return [];
-
-    const dateString = [
-      year,
-      String(month + 1).padStart(2, "0"),
-      String(day).padStart(2, "0")
-    ].join("-");
-
-    return events.filter(
-      (event) =>
-        dateString >= event.start &&
-        dateString <= event.end
-    );
+    const dateString = toDateString(day);
+    return events.filter((event) => dateString >= event.start && dateString <= event.end);
   };
 
   const changeMonth = (value) => {
     setCurrentDate(new Date(year, month + value, 1));
-    setSelectedEvent(null);
+    setSelectedDay(null);
   };
 
   const goToToday = () => {
     setCurrentDate(new Date());
-    setSelectedEvent(null);
+    setSelectedDay(null);
+  };
+
+  const today = new Date();
+  const selectedEvents = selectedDay ? getEventsForDay(selectedDay) : [];
+
+  const chipClass = (event) => {
+    const name = event.extendedProps?.employee || "";
+    let sum = 0;
+    for (const ch of name) sum += ch.charCodeAt(0);
+    return `c${(sum % 5) + 1}`;
   };
 
   return (
-    <div className="card shadow-sm mb-4">
-      <div className="card-body">
-        <div className="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
-          <h4 className="mb-0">Leave Calendar</h4>
-
-          <div className="d-flex flex-wrap align-items-center gap-2">
-            <button
-              className="btn btn-outline-primary btn-sm"
-              onClick={goToToday}
-            >
-              Today
-            </button>
-
-            <button
-              className="btn btn-outline-secondary btn-sm"
-              onClick={() => changeMonth(-1)}
-            >
-              Previous
-            </button>
-
-            <h5 className="mb-0">
-              {currentDate.toLocaleString("en-IN", {
-                month: "long",
-                year: "numeric"
-              })}
-            </h5>
-
-            <button
-              className="btn btn-outline-secondary btn-sm"
-              onClick={() => changeMonth(1)}
-            >
-              Next
-            </button>
-          </div>
+    <div className="panel">
+      <div className="cal-head">
+        <div className="month">
+          {currentDate.toLocaleString("en-IN", { month: "long", year: "numeric" })}
         </div>
+        <div className="cal-nav">
+          <button onClick={() => changeMonth(-1)} aria-label="Previous month">‹</button>
+          <button onClick={goToToday}>Today</button>
+          <button onClick={() => changeMonth(1)} aria-label="Next month">›</button>
+        </div>
+      </div>
 
-        {loading ? (
-          <p>Loading calendar...</p>
-        ) : error ? (
-          <div className="alert alert-danger">{error}</div>
-        ) : (
-          <>
-            <div className="row text-center fw-bold border-bottom pb-2 mb-2">
-              {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(
-                (day) => (
-                  <div className="col" key={day}>
-                    {day}
+      {loading ? (
+        <p className="small mb-0">Loading calendar...</p>
+      ) : error ? (
+        <div className="alert alert-danger small mb-0">{error}</div>
+      ) : (
+        <>
+          <div className="cal-weekdays">
+            {WEEKDAYS.map((d) => <div key={d}>{d}</div>)}
+          </div>
+
+          <div className="cal-grid">
+            {days.map((day, index) => {
+              if (!day) return <div key={index} className="cal-cell blank" />;
+
+              const dayEvents = getEventsForDay(day);
+              const weekday = new Date(year, month, day).getDay();
+              const isToday =
+                today.getFullYear() === year &&
+                today.getMonth() === month &&
+                today.getDate() === day;
+
+              return (
+                <button
+                  type="button"
+                  key={index}
+                  className={`cal-cell ${weekday === 0 || weekday === 6 ? "weekend" : ""} ${isToday ? "today" : ""} ${selectedDay === day ? "selected" : ""}`}
+                  onClick={() => setSelectedDay(selectedDay === day ? null : day)}
+                >
+                  <span className="num">{day}</span>
+                  {dayEvents.slice(0, MAX_CHIPS).map((event, i) => (
+                    <span key={i} className={`cal-chip ${chipClass(event)}`}>
+                      {event.extendedProps?.employee}
+                    </span>
+                  ))}
+                  {dayEvents.length > MAX_CHIPS && (
+                    <span className="cal-more">+{dayEvents.length - MAX_CHIPS} more</span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+
+          {selectedDay && (
+            <div className="cal-detail">
+              <strong>
+                {new Date(year, month, selectedDay).toLocaleDateString("en-IN", {
+                  weekday: "long", day: "numeric", month: "long",
+                })}
+              </strong>
+              {selectedEvents.length === 0 ? (
+                <p className="mb-0 mt-2">No one is on leave this day.</p>
+              ) : (
+                selectedEvents.map((event, i) => (
+                  <div className="item" key={i}>
+                    <b>{event.extendedProps.employee}</b>
+                    <span>{event.extendedProps.department}</span>
+                    <span>{event.extendedProps.leave_type}</span>
+                    <span>{event.start} → {event.end}</span>
                   </div>
-                )
+                ))
               )}
             </div>
-
-            <div className="row g-1">
-              {days.map((day, index) => {
-                const dayEvents = getEventsForDay(day);
-
-                const isToday =
-                  day &&
-                  new Date().getFullYear() === year &&
-                  new Date().getMonth() === month &&
-                  new Date().getDate() === day;
-
-                return (
-                  <div
-                    className="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2"
-                    key={index}
-                  >
-                    <div
-                      className={`border rounded p-2 ${
-                        isToday ? "border-primary border-2" : ""
-                      }`}
-                      style={{ minHeight: "110px" }}
-                    >
-                      {day && (
-                        <>
-                          <strong
-                            className={isToday ? "text-primary" : ""}
-                          >
-                            {day}
-                            {isToday && " (Today)"}
-                          </strong>
-
-                          {dayEvents.map((event) => (
-                            <button
-                              type="button"
-                              key={event.id}
-                              className="btn btn-primary w-100 text-start p-1 mt-1"
-                              style={{
-                                fontSize: "11px",
-                                overflowWrap: "anywhere"
-                              }}
-                              onClick={() => setSelectedEvent(event)}
-                            >
-                              <div>{event.extendedProps.employee}</div>
-                              <div>{event.extendedProps.leave_type}</div>
-                            </button>
-                          ))}
-                        </>
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-
-            {selectedEvent && (
-              <div className="card border-primary mt-4">
-                <div className="card-body">
-                  <div className="d-flex justify-content-between align-items-center mb-3">
-                    <h5 className="mb-0">Leave Details</h5>
-
-                    <button
-                      type="button"
-                      className="btn-close"
-                      aria-label="Close"
-                      onClick={() => setSelectedEvent(null)}
-                    />
-                  </div>
-
-                  <p>
-                    <strong>Employee:</strong>{" "}
-                    {selectedEvent.extendedProps.employee}
-                  </p>
-
-                  <p>
-                    <strong>Department:</strong>{" "}
-                    {selectedEvent.extendedProps.department}
-                  </p>
-
-                  <p>
-                    <strong>Leave Type:</strong>{" "}
-                    {selectedEvent.extendedProps.leave_type}
-                  </p>
-
-                  <p>
-                    <strong>Start Date:</strong>{" "}
-                    {selectedEvent.start}
-                  </p>
-
-                  <p className="mb-0">
-                    <strong>End Date:</strong>{" "}
-                    {selectedEvent.end}
-                  </p>
-                </div>
-              </div>
-            )}
-          </>
-        )}
-      </div>
+          )}
+        </>
+      )}
     </div>
   );
 }

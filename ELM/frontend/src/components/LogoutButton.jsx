@@ -12,11 +12,8 @@ function LogoutButton() {
   };
 
   return (
-    <button
-      className="btn btn-danger"
-      onClick={handleLogout}
-    >
-      Logout
+    <button className="btn btn-sm" onClick={handleLogout}>
+  Logout
     </button>
   );
 }

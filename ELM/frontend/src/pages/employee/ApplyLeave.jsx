@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../services/api";
+import AppShell from "../../components/AppShell";
 
 function ApplyLeave() {
   const navigate = useNavigate();
@@ -90,101 +91,79 @@ const selectedBalance = balances.find(
 );
 
   return (
-    <div className="container mt-4">
-      <div className="card shadow-sm p-4">
-        <h3 className="mb-4">Apply for Leave</h3>
+  <AppShell title="Apply for Leave" subtitle="Fill in the details and submit for approval.">
+    <div className="row g-4">
+      <div className="col-xl-8">
+        <div className="panel">
+          {error && <div className="alert alert-danger">{error}</div>}
 
-        {error && (
-          <div className="alert alert-danger">{error}</div>
-        )}
+          <form onSubmit={handleSubmit}>
+            <div className="row g-3">
+              <div className="col-md-12">
+                <label className="form-label">Leave Type</label>
+                <select className="form-select" value={leaveType}
+                  onChange={(e) => setLeaveType(e.target.value)} required>
+                  <option value="">Select Leave Type</option>
+                  {leaveTypes.map((type) => (
+                    <option key={type.id} value={type.id}>{type.name}</option>
+                  ))}
+                </select>
+              </div>
 
-        <form onSubmit={handleSubmit}>
-          <div className="mb-3">
-            <label className="form-label">Leave Type</label>
-            <select
-              className="form-select"
-              value={leaveType}
-              onChange={(e) => setLeaveType(e.target.value)}
-              required
-            >
-              <option value="">Select Leave Type</option>
-              {leaveTypes.map((type) => (
-                <option key={type.id} value={type.id}>
-                  {type.name}
-                </option>
-              ))}
-            </select>
-            {selectedBalance && (
-                <div className="alert alert-info mt-2">
-                    <p>Allocated: {selectedBalance.allocated_days} days</p>
-                    <p>Used: {selectedBalance.used_days} days</p>
-                    <p>Remaining: {selectedBalance.remaining_days} days</p>
+              <div className="col-md-6">
+                <label className="form-label">Start Date</label>
+                <input type="date" className="form-control" value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)} required />
+              </div>
 
-                    {selectedBalance.remaining_days === 0 && (
-                    <strong className="text-danger">
-                        You have no remaining balance for this leave type.
-                    </strong>
-                    )}
-                </div>
-                )}
-          </div>
+              <div className="col-md-6">
+                <label className="form-label">End Date</label>
+                <input type="date" className="form-control" value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)} required />
+              </div>
 
-          <div className="mb-3">
-            <label className="form-label">Start Date</label>
-            <input
-              type="date"
-              className="form-control"
-              value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
-              required
-            />
-          </div>
+              <div className="col-12">
+                <label className="form-label">Reason</label>
+                <textarea className="form-control" rows="5" value={reason}
+                  onChange={(e) => setReason(e.target.value)} required />
+              </div>
+            </div>
 
-          <div className="mb-3">
-            <label className="form-label">End Date</label>
-            <input
-              type="date"
-              className="form-control"
-              value={endDate}
-              onChange={(e) => setEndDate(e.target.value)}
-              required
-            />
-          </div>
+            <div className="d-flex gap-2 mt-4">
+              <button type="submit" className="btn btn-primary" disabled={loading}>
+                {loading ? "Submitting..." : "Submit Application"}
+              </button>
+              <button type="button" className="btn btn-outline-primary"
+                onClick={() => navigate(user?.role === "manager" ? "/manager" : "/employee")}>
+                Back
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
 
-          <div className="mb-3">
-            <label className="form-label">Reason</label>
-            <textarea
-              className="form-control"
-              rows="3"
-              value={reason}
-              onChange={(e) => setReason(e.target.value)}
-              required
-            />
-          </div>
-
-          <button
-            type="submit"
-            className="btn btn-primary"
-            disabled={loading}
-          >
-            {loading ? "Submitting..." : "Submit Application"}
-          </button>
-
-          <button
-            type="button"
-            className="btn btn-secondary ms-2"
-            onClick={() =>
-              navigate(
-                user?.role === "manager" ? "/manager" : "/employee"
-              )
-            }
-          >
-            Back
-          </button>
-        </form>
+      <div className="col-xl-4">
+        <div className="apply-note">
+          <h6>{selectedType ? `${selectedType.name} balance` : "Leave balance"}</h6>
+          {selectedBalance ? (
+            <>
+              <div className="line"><span>Allocated</span><b>{selectedBalance.allocated_days} days</b></div>
+              <div className="line"><span>Used</span><b>{selectedBalance.used_days} days</b></div>
+              <div className="line"><span>Remaining</span><b>{selectedBalance.remaining_days} days</b></div>
+              {selectedBalance.remaining_days === 0 && (
+                <strong className="text-danger d-block mt-2">
+                  You have no remaining balance for this leave type.
+                </strong>
+              )}
+            </>
+          ) : (
+            <p className="mb-0">Pick a leave type to see your balance.</p>
+          )}
+        </div>
       </div>
     </div>
-  );
+  </AppShell>
+);
 }
 
 export default ApplyLeave;

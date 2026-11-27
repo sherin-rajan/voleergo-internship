@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import api from "../../services/api";
-import LogoutButton from "../../components/LogoutButton";
 import LeaveCalendar from "../../components/LeaveCalendar";
+import AppShell from "../../components/AppShell";
 
 const months = [
   "January", "February", "March", "April",
@@ -85,253 +85,172 @@ function HRDashboard() {
     loadDashboard();
   }, [year]);
 
-  if (loading) {
-    return <div className="container mt-5">Loading dashboard...</div>;
+    if (loading) {
+    return (
+      <AppShell title="HR Dashboard">
+        <p>Loading dashboard...</p>
+      </AppShell>
+    );
   }
 
   if (error) {
     return (
-      <div className="container mt-5">
+      <AppShell title="HR Dashboard">
         <div className="alert alert-danger">{error}</div>
-        <button className="btn btn-primary" onClick={loadDashboard}>
-          Retry
-        </button>
-      </div>
+        <button className="btn btn-primary" onClick={loadDashboard}>Retry</button>
+      </AppShell>
     );
   }
 
   const cards = [
-    { title: "Total Employees", value: dashboard.total_employees },
-    { title: "Departments", value: dashboard.total_departments },
-    { title: "Pending Requests", value: dashboard.pending_requests },
-    { title: "Approved Requests", value: dashboard.approved_requests },
-    { title: "Rejected Requests", value: dashboard.rejected_requests }
+    { title: "Total Employees", value: dashboard.total_employees, tone: "tone-ink" },
+    { title: "Departments", value: dashboard.total_departments, tone: "" },
+    { title: "Pending", value: dashboard.pending_requests, tone: "tone-accent" },
+    { title: "Approved", value: dashboard.approved_requests, tone: "tone-success" },
+    { title: "Rejected", value: dashboard.rejected_requests, tone: "tone-danger" },
   ];
 
   return (
-    <div className="container-fluid p-4">
-      <h2 className="mb-1">HR Dashboard</h2>
-      <p className="text-muted mb-4">
-        Overview of employee leave management
-      </p>
-      <LogoutButton />
-      <LeaveCalendar />
-
-      {/* Summary Cards */}
+    <AppShell title="HR Dashboard" subtitle="Overview of employee leave management">
       <div className="row g-3 mb-4">
-        {cards.map((card, index) => (
-          <div className="col-md-4 col-lg" key={index}>
-            <div className="card shadow-sm h-100">
-              <div className="card-body">
-                <p className="text-muted mb-2">{card.title}</p>
-                <h3 className="fw-bold">{card.value}</h3>
-              </div>
+        {cards.map((card) => (
+          <div className="col-6 col-md-4 col-xl" key={card.title}>
+            <div className={`stat-tile ${card.tone}`}>
+              <div className="label">{card.title}</div>
+              <div className="value">{card.value}</div>
             </div>
           </div>
         ))}
       </div>
 
-      {/* Department Summary */}
-      <div className="card shadow-sm mb-4">
-        <div className="card-body">
-          <h5 className="mb-3">Department Summary</h5>
-
-          <div className="table-responsive">
-            <table className="table table-hover">
-              <thead>
-                <tr>
-                  <th>Department</th>
-                  <th>Total Employees</th>
-                </tr>
-              </thead>
-              <tbody>
-                {dashboard.department_summary.map((item, index) => (
-                  <tr key={index}>
-                    <td>{item.department}</td>
-                    <td>{item.total_employees}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+      <div className="row g-4 mb-4">
+        <div className="col-xl-8">
+          <LeaveCalendar />
         </div>
-      </div>
 
-      <div className="card shadow-sm mb-4">
-        <div className="card-body">
-          <h5 className="mb-3">Pending Manager Leave Requests</h5>
-
-          {actionMessage && (
-            <div className="alert alert-info">{actionMessage}</div>
-          )}
-
-          {pendingRequests.length === 0 ? (
-            <p className="text-muted">No pending manager requests.</p>
-          ) : (
-            <div className="table-responsive">
-              <table className="table table-hover align-middle">
+        <div className="col-xl-4">
+          <div className="panel panel-flush">
+            <div className="panel-title"><h5>Department Summary</h5><span className="sub">headcount</span></div>
+            <div className="table-responsive scroll-y mt-3">
+              <table className="table data-table">
                 <thead>
-                  <tr>
-                    <th>Manager</th>
-                    <th>Department</th>
-                    <th>Leave Type</th>
-                    <th>Dates</th>
-                    <th>Days</th>
-                    <th>Reason</th>
-                    <th>Comment</th>
-                    <th>Action</th>
-                  </tr>
+                  <tr><th>Department</th><th className="text-end">Employees</th></tr>
                 </thead>
-
                 <tbody>
-                  {pendingRequests.map((request) => (
-                    <tr key={request.id}>
-                      <td>
-                        {request.employee_name}
-                        <br />
-                        <small className="text-muted">
-                          {request.employee_id}
-                        </small>
-                      </td>
-
-                      <td>{request.department}</td>
-                      <td>{request.leave_type_name}</td>
-
-                      <td>
-                        {request.start_date}
-                        <br />
-                        to {request.end_date}
-                      </td>
-
-                      <td>{request.total_days}</td>
-                      <td>{request.reason}</td>
-
-                      <td>
-                        <input
-                          type="text"
-                          className="form-control"
-                          placeholder="Optional comment"
-                          value={comments[request.id] || ""}
-                          onChange={(e) =>
-                            setComments({
-                              ...comments,
-                              [request.id]: e.target.value
-                            })
-                          }
-                        />
-                      </td>
-
-                      <td>
-                        <div className="d-flex gap-2">
-                          <button
-                            className="btn btn-success btn-sm"
-                            disabled={reviewingId === request.id}
-                            onClick={() => handleReview(request.id, "approved")}
-                          >
-                            Approve
-                          </button>
-
-                          <button
-                            className="btn btn-danger btn-sm"
-                            disabled={reviewingId === request.id}
-                            onClick={() => handleReview(request.id, "rejected")}
-                          >
-                            Reject
-                          </button>
-                        </div>
-                      </td>
+                  {dashboard.department_summary.map((item, index) => (
+                    <tr key={index}>
+                      <td><b>{item.department}</b></td>
+                      <td className="text-end">{item.total_employees}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
-          )}
+          </div>
         </div>
       </div>
 
-      {/* Monthly Report */}
-      <div className="card shadow-sm mb-4">
-        <div className="card-body">
-          <div className="d-flex justify-content-between align-items-center mb-3">
-            <h5 className="mb-0">Monthly Leave Report</h5>
+      <div className="panel panel-flush mb-4">
+        <div className="panel-title"><h5>Pending Manager Leave Requests</h5><span className="sub">{pendingRequests.length} waiting</span></div>
 
-            <select
-              className="form-select"
-              style={{ width: "120px" }}
-              value={year}
-              onChange={(e) => setYear(Number(e.target.value))}
-            >
-              {[2025, 2026, 2027].map((item) => (
-                <option key={item} value={item}>{item}</option>
+        {actionMessage && <div className="alert alert-info mx-4 mt-3 mb-0">{actionMessage}</div>}
+
+        {pendingRequests.length === 0 ? (
+          <div className="empty">No pending manager requests.</div>
+        ) : (
+          <div className="mt-2">
+            {pendingRequests.map((request) => (
+              <div className="request-card" key={request.id}>
+                <div className="who">
+                  <strong>{request.employee_name}</strong>
+                  <small>{request.employee_id} · {request.department}</small>
+                </div>
+
+                <div className="when">
+                  <span className="chip">{request.leave_type_name}</span>
+                  <div><small>{request.start_date} → {request.end_date} · {request.total_days} days</small></div>
+                </div>
+
+                <div>
+                  <small className="text-muted fw-bold">REASON</small>
+                  <p className="reason mt-0">{request.reason}</p>
+                </div>
+
+                <input
+                  type="text"
+                  className="form-control"
+                  placeholder="Optional comment"
+                  value={comments[request.id] || ""}
+                  onChange={(e) => setComments({ ...comments, [request.id]: e.target.value })}
+                />
+
+                <div className="actions">
+                  <button className="btn btn-success btn-sm" disabled={reviewingId === request.id}
+                    onClick={() => handleReview(request.id, "approved")}>Approve</button>
+                  <button className="btn btn-soft-danger btn-sm" disabled={reviewingId === request.id}
+                    onClick={() => handleReview(request.id, "rejected")}>Reject</button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <div className="panel panel-flush mb-4">
+        <div className="panel-title">
+          <h5>Monthly Leave Report</h5>
+          <select className="form-select" style={{ width: "120px" }} value={year}
+            onChange={(e) => setYear(Number(e.target.value))}>
+            {[2025, 2026, 2027].map((item) => (
+              <option key={item} value={item}>{item}</option>
+            ))}
+          </select>
+        </div>
+        <div className="table-responsive mt-3">
+          <table className="table data-table">
+            <thead>
+              <tr><th>Month</th><th>Total</th><th>Pending</th><th>Approved</th><th>Rejected</th><th>Approved Leave Days</th></tr>
+            </thead>
+            <tbody>
+              {monthlyReport.map((item) => (
+                <tr key={item.month}>
+                  <td><b>{months[item.month - 1]}</b></td>
+                  <td>{item.total_requests}</td>
+                  <td>{item.pending_requests}</td>
+                  <td>{item.approved_requests}</td>
+                  <td>{item.rejected_requests}</td>
+                  <td>{item.approved_leave_days}</td>
+                </tr>
               ))}
-            </select>
-          </div>
-
-          <div className="table-responsive">
-            <table className="table table-hover">
-              <thead>
-                <tr>
-                  <th>Month</th>
-                  <th>Total</th>
-                  <th>Pending</th>
-                  <th>Approved</th>
-                  <th>Rejected</th>
-                  <th>Approved Leave Days</th>
-                </tr>
-              </thead>
-              <tbody>
-                {monthlyReport.map((item) => (
-                  <tr key={item.month}>
-                    <td>{months[item.month - 1]}</td>
-                    <td>{item.total_requests}</td>
-                    <td>{item.pending_requests}</td>
-                    <td>{item.approved_requests}</td>
-                    <td>{item.rejected_requests}</td>
-                    <td>{item.approved_leave_days}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+            </tbody>
+          </table>
         </div>
       </div>
 
-      {/* Department Leave Report */}
-      <div className="card shadow-sm mb-4">
-        <div className="card-body">
-          <h5 className="mb-3">Department-wise Leave Report</h5>
-
-          <div className="table-responsive">
-            <table className="table table-hover">
-              <thead>
-                <tr>
-                  <th>Department</th>
-                  <th>Employees</th>
-                  <th>Total Requests</th>
-                  <th>Pending</th>
-                  <th>Approved</th>
-                  <th>Rejected</th>
-                  <th>Approved Leave Days</th>
+      <div className="panel panel-flush">
+        <div className="panel-title"><h5>Department-wise Leave Report</h5></div>
+        <div className="table-responsive mt-3">
+          <table className="table data-table">
+            <thead>
+              <tr><th>Department</th><th>Employees</th><th>Total Requests</th><th>Pending</th><th>Approved</th><th>Rejected</th><th>Approved Leave Days</th></tr>
+            </thead>
+            <tbody>
+              {departmentReport.map((item, index) => (
+                <tr key={index}>
+                  <td><b>{item.department}</b></td>
+                  <td>{item.total_employees}</td>
+                  <td>{item.total_requests}</td>
+                  <td>{item.pending_requests}</td>
+                  <td>{item.approved_requests}</td>
+                  <td>{item.rejected_requests}</td>
+                  <td>{item.approved_leave_days}</td>
                 </tr>
-              </thead>
-              <tbody>
-                {departmentReport.map((item, index) => (
-                  <tr key={index}>
-                    <td>{item.department}</td>
-                    <td>{item.total_employees}</td>
-                    <td>{item.total_requests}</td>
-                    <td>{item.pending_requests}</td>
-                    <td>{item.approved_requests}</td>
-                    <td>{item.rejected_requests}</td>
-                    <td>{item.approved_leave_days}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
-    </div>
+    </AppShell>
   );
 }
 

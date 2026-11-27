@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../services/api";
@@ -50,50 +49,46 @@ function Login() {
   };
 
   return (
-    <div className="container min-vh-100 d-flex justify-content-center align-items-center">
-      <div className="card shadow p-4" style={{ width: "400px" }}>
-        <h3 className="text-center mb-4">
-          Employee Leave Management
-        </h3>
+  <div className="login-wrap">
+    <div className="login-side">
+      <div className="brand">
+        <div className="brand-mark">E</div>
+        <div className="brand-name">ELM<small>Leave Management</small></div>
+      </div>
+      <div>
+        <h2>Plan time off. Keep the team moving.</h2>
+        <p>Requests, approvals and balances, one calm dashboard for everyone.</p>
+      </div>
+      <small style={{ opacity: 0.6 }}>Employee Leave Management System</small>
+    </div>
+
+    <div className="login-main">
+      <div className="login-box">
+        <h3>Welcome back</h3>
+        <p className="mb-4">Sign in to continue.</p>
 
         <form onSubmit={handleLogin}>
           <div className="mb-3">
             <label className="form-label">Username</label>
-            <input
-              type="text"
-              className="form-control"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              required
-            />
+            <input type="text" className="form-control" value={username}
+              onChange={(e) => setUsername(e.target.value)} required />
           </div>
-
           <div className="mb-3">
             <label className="form-label">Password</label>
-            <input
-              type="password"
-              className="form-control"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
+            <input type="password" className="form-control" value={password}
+              onChange={(e) => setPassword(e.target.value)} required />
           </div>
 
-          {error && (
-            <div className="alert alert-danger">{error}</div>
-          )}
+          {error && <div className="alert alert-danger">{error}</div>}
 
-          <button
-            type="submit"
-            className="btn btn-primary w-100"
-            disabled={loading}
-          >
+          <button type="submit" className="btn btn-primary w-100 py-2" disabled={loading}>
             {loading ? "Logging in..." : "Login"}
           </button>
         </form>
       </div>
     </div>
-  );
+  </div>
+);
 }
 
 export default Login;
