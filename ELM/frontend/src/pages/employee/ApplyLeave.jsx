@@ -5,7 +5,7 @@ import api from "../../services/api";
 
 function ApplyLeave() {
   const navigate = useNavigate();
-
+  const user = JSON.parse(localStorage.getItem("user"));
   const [leaveTypes, setLeaveTypes] = useState([]);
   const [leaveType, setLeaveType] = useState("");
   const [startDate, setStartDate] = useState("");
@@ -173,7 +173,11 @@ const selectedBalance = balances.find(
           <button
             type="button"
             className="btn btn-secondary ms-2"
-            onClick={() => navigate("/employee")}
+            onClick={() =>
+              navigate(
+                user?.role === "manager" ? "/manager" : "/employee"
+              )
+            }
           >
             Back
           </button>

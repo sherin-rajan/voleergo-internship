@@ -36,9 +36,9 @@ class ManagerLeaveRequestListView(ListAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        if self.request.user.role != 'manager':
+        if self.request.user.role not in ['manager', 'hr']:
             raise PermissionDenied(
-                "Only managers can view team requests."
+                "Only managers and HR can view team requests."
             )
 
         return LeaveRequest.objects.filter(

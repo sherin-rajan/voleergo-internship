@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import api from "../../services/api";
 import LogoutButton from "../../components/LogoutButton";
 import { useNavigate, useLocation } from "react-router-dom";
+import LeaveCalendar from "../../components/LeaveCalendar";
 
 function EmployeeDashboard() {
   const user = JSON.parse(localStorage.getItem("user"));
@@ -68,6 +69,7 @@ useEffect(() => {
         {message.success}
     </div>
     )}
+    <LeaveCalendar />
 
     {message?.error && (
     <div className="alert alert-danger">

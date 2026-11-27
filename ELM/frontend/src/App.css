@@ -1,6 +1,151 @@
 .counter {
   font-size: 16px;
-  padding: 5px 10px;
+  padding: 5px 10px
+/* Dashboard layout */
+
+.container,
+.container-fluid {
+  padding-top: 24px;
+  padding-bottom: 24px;
+}
+
+.container-fluid {
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+/* Dashboard headings */
+
+.container h2,
+.container-fluid h2 {
+  font-size: 25px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.container h4,
+.container-fluid h4 {
+  font-size: 19px;
+  font-weight: 650;
+}
+
+/* Cards */
+
+.card {
+  background: #ffffff;
+  border: 1px solid #e5eaf1;
+  border-radius: 12px;
+  box-shadow: 0 3px 12px rgba(31, 45, 70, 0.05);
+}
+
+.card-body {
+  padding: 22px;
+}
+
+.card h3 {
+  font-size: 27px;
+}
+
+/* Tables */
+
+.table-responsive {
+  border-radius: 8px;
+}
+
+.table {
+  margin-bottom: 0;
+}
+
+.table thead th {
+  background: #f0f3f8;
+  color: #34425a;
+  border-bottom: 1px solid #e1e6ee;
+  padding: 13px 12px;
+  font-size: 13px;
+}
+
+.table tbody td {
+  padding: 13px 12px;
+  color: #46536a;
+  font-size: 14px;
+}
+
+.table tbody tr:hover {
+  background: #f8faff;
+}
+
+/* Status badges */
+
+.badge {
+  padding: 6px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 20px;
+  text-transform: capitalize;
+}
+
+/* Buttons */
+
+.btn {
+  border-radius: 7px;
+  font-weight: 500;
+  transition: 0.2s ease;
+}
+
+.btn-sm {
+  padding: 6px 11px;
+}
+
+/* Alerts */
+
+.alert {
+  border: none;
+  border-radius: 9px;
+  padding: 13px 16px;
+}
+
+/* Leave calendar */
+
+.calendar-day {
+  min-height: 110px;
+  border: 1px solid #e5eaf1;
+  border-radius: 8px;
+  padding: 9px;
+  background: #ffffff;
+}
+
+.calendar-event {
+  background: #3157a4;
+  color: #ffffff;
+  border-radius: 5px;
+  padding: 5px;
+  margin-top: 5px;
+  font-size: 11px;
+}
+
+/* Responsive layout */
+
+@media (max-width: 768px) {
+  .container,
+  .container-fluid {
+    padding: 16px;
+  }
+
+  .card-body {
+    padding: 16px;
+  }
+
+  .container h2,
+  .container-fluid h2 {
+    font-size: 21px;
+  }
+
+  .table tbody td {
+    padding: 10px;
+    font-size: 13px;
+  }
+}
+
   border-radius: 5px;
   color: var(--accent);
   background: var(--accent-bg);

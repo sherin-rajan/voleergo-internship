@@ -39,10 +39,20 @@ function App() {
             </ProtectedRoute>
           }
         />
+
         <Route
           path="/employee/apply-leave"
           element={
-            <ProtectedRoute allowedRoles={["employee"]}>
+            <ProtectedRoute allowedRoles={["employee", "manager"]}>
+              <ApplyLeave />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/manager/apply-leave"
+          element={
+            <ProtectedRoute allowedRoles={["manager"]}>
               <ApplyLeave />
             </ProtectedRoute>
           }
